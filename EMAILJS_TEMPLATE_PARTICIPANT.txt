@@ -1,0 +1,23 @@
+Objet : Votre rapport CAP SCORE GMS® — {{societe}}
+To Email : {{email_participant}}
+
+Bonjour {{prenom}},
+
+Merci d'avoir complété votre CAP Score Maturité GMS®.
+
+Votre score global est de {{score_global}}/100 — niveau {{tranche_globale}}.
+
+Vous trouverez en pièce jointe votre fiche de diagnostic personnalisée avec vos scores par axe, la lecture de votre profil, vos recommandations priorisées et les prochaines pistes de travail.
+
+Ce diagnostic constitue une restitution de maturité déclarée et un point de départ pour structurer votre démarche GMS.
+
+Bien cordialement,
+
+Jérôme Hardellet
+CAP NEGO® — Conseil Action Performance
+« Les meilleures négociations commencent bien avant le rendez-vous. »
+
+Pièce jointe :
+Filename : CAP-SCORE-{{societe}}.pdf
+Content type : application/pdf
+Parameter name : report_pdf
