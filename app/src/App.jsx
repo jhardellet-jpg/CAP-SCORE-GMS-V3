@@ -471,7 +471,7 @@ function EcranAccueil({ onDemarrer }) {
           background:C.accent, color:"#fff", border:"none", borderRadius:6, padding:"16px 40px",
           fontSize:16, fontWeight:800, cursor:"pointer", boxShadow:"0 4px 20px rgba(232,84,26,0.4)",
         }}>Démarrer le diagnostic →</button>
-        <p style={{color:"#475569", fontSize:12, marginTop:20}}>Gratuit · Score indicatif immédiat · Résultats complets à débloquer</p>
+        <p style={{color:"#475569", fontSize:12, marginTop:20}}>Gratuit · Score indicatif immédiat · Rapport personnalisé inclus</p>
       </div>
     </div>
   );
@@ -618,7 +618,7 @@ function EcranResultats({ reponses, complet, onRelancer, participant, emailStatu
                 </div>
                 <div style={{flex:1, minWidth:180}}>
                   <div style={{fontSize:14, color:global>=52?"#16A34A":"#DC2626", fontWeight:800, marginBottom:4}}>
-                    {global>=52?`+${global-52} pts au-dessus`:`${52-global} pts sous la moyenne`}
+                    {global>=52?`+${global-52} pts au-dessus`:`${52-global} pts sous le repère`}
                   </div>
                   <div style={{fontSize:12, color:C.gris}}>Repère provisoire — base statistique à consolider</div>
                 </div>
@@ -631,7 +631,7 @@ function EcranResultats({ reponses, complet, onRelancer, participant, emailStatu
           <div style={{fontSize:13, fontWeight:800, color:C.primaire, marginBottom:4}}>Envoi du rapport</div>
           <div style={{fontSize:12, color:emailStatus==="error"?"#DC2626":emailStatus==="sent"?"#16A34A":C.gris}}>
             {emailStatus==="sending" && "Envoi du rapport en cours…"}
-            {emailStatus==="sent" && "Rapport transmis au service d’envoi. La réception dépend de la configuration EmailJS."}
+            {emailStatus==="sent" && "Votre diagnostic a bien été transmis à CAP NEGO. Votre rapport personnalisé est disponible en téléchargement ci-dessous."}
             {emailStatus==="error" && "L’envoi a échoué. Vous pouvez télécharger le PDF immédiatement ou relancer l’envoi."}
             {emailStatus==="idle" && "Le rapport PDF est disponible au téléchargement."}
           </div>
