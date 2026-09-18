@@ -847,3 +847,9 @@ const envoyerSupabase = async (reponsesFinal) => {
     alert("Le diagnostic n’a pas pu être enregistré. Merci de réessayer.");
   }
 };
+  if (ecran === "accueil") return <EcranAccueil onDemarrer={() => setEcran("identite")}/>;
+  if (ecran === "motdepasse") return <EcranMotDePasse onValider={() => setEcran("identite")}/>;
+  if (ecran === "identite") return <EcranIdentite onValider={data => { setParticipant(data); setEcran("questionnaire"); }}/>;
+  if (ecran === "questionnaire") return <EcranQuestionnaire reponses={reponses} onRepondre={onRepondre} onTerminer={onTerminer}/>;
+  if (ecran === "resultats") return <EcranResultats reponses={reponses} complet={complet} onRelancer={onRelancer} participant={participant} emailStatus={emailStatus} onRenvoyer={() => envoyerEmail(reponses)}/>;
+}
