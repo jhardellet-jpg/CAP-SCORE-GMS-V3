@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import emailjs from "@emailjs/browser";
 import { createReportPdfBase64, downloadReportPdf } from "./pdfReport.js";
 
@@ -670,9 +670,16 @@ export default function CAPScore() {
   const [complet, setComplet] = useState(true);
   const [participant, setParticipant] = useState(null);
   const [emailStatus, setEmailStatus] = useState("idle");
-
+const envoiEnCours = useRef(false);
   const onRepondre = (id, val) => setReponses(r => ({...r, [id]: val}));
-  const onRelancer = () => { setReponses({}); setComplet(true); setParticipant(null); setEmailStatus("idle"); setEcran("accueil"); };
+  const onRelancer = () => {
+  envoiEnCours.current = false;
+  setReponses({});
+  setComplet(true);
+  setParticipant(null);
+  setEmailStatus("idle");
+  setEcran("accueil");
+};
 
   const envoyerEmail = async (reponsesFinal) => {
     setEmailStatus("sending");
@@ -825,20 +832,18 @@ const envoyerSupabase = async (reponsesFinal) => {
 
   return result;
 };
-  const onTerminer = async () => {
+ const onTerminer = async () => {
+  if (envoiEnCours.current) return;
+
+  envoiEnCours.current = true;
+
   try {
     await envoyerSupabase(reponses);
     setEcran("resultats");
     envoyerEmail(reponses);
   } catch (err) {
+    envoiEnCours.current = false;
     console.error("Supabase error:", err);
     alert("Le diagnostic n’a pas pu être enregistré. Merci de réessayer.");
   }
 };
-
-  if (ecran === "accueil") return <EcranAccueil onDemarrer={() => setEcran("identite")}/>;
-  if (ecran === "motdepasse") return <EcranMotDePasse onValider={() => setEcran("identite")}/>;
-  if (ecran === "identite") return <EcranIdentite onValider={data => { setParticipant(data); setEcran("questionnaire"); }}/>;
-  if (ecran === "questionnaire") return <EcranQuestionnaire reponses={reponses} onRepondre={onRepondre} onTerminer={onTerminer}/>;
-  if (ecran === "resultats") return <EcranResultats reponses={reponses} complet={complet} onRelancer={onRelancer} participant={participant} emailStatus={emailStatus} onRenvoyer={() => envoyerEmail(reponses)}/>;
-}
