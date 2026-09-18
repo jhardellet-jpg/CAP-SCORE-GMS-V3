@@ -728,8 +728,113 @@ export default function CAPScore() {
       setEmailStatus("error");
     }
   };
+const envoyerSupabase = async (reponsesFinal) => {
+  const { scoresAxes, global } = calculerScores(reponsesFinal);
 
-  const onTerminer = () => { setEcran("resultats"); envoyerEmail(reponses); };
+  const niveauxServeur = {
+    critique: "À structurer",
+    fragile: "En développement",
+    engagee: "En consolidation",
+    maitrisee: "Maîtrisée",
+  };
+
+  const answers = QUESTIONS.map((q) => {
+    const axe = AXES.find((a) => a.id === q.axe);
+
+    if (q.type === "synthese") {
+      const criteria = q.criteres.map(
+        (_, i) => reponsesFinal[`${q.id}_${i}`]
+      );
+
+      const answerValue =
+        criteria.reduce((a, b) => a + b, 0) / criteria.length;
+
+      return {
+        question_id: q.id,
+        axis: axe.label,
+        answer_value: answerValue,
+        answer_text: null,
+        answer_detail: { criteria },
+      };
+    }
+
+    return {
+      question_id: q.id,
+      axis: axe.label,
+      answer_value: reponsesFinal[q.id],
+      answer_text: null,
+      answer_detail: null,
+    };
+  });
+
+  const payload = {
+    company: {
+      name: participant?.societe || "",
+      siret: null,
+    },
+
+    participant: {
+      first_name: participant?.prenom || "",
+      last_name: participant?.nom || "",
+      email: participant?.email || "",
+    },
+
+    diagnostic: {
+      job_title: participant?.fonction || null,
+      revenue_band: participant?.ca || null,
+
+      global_score: global,
+      global_level: niveauxServeur[tranche(global)],
+
+      attractiveness_score: scoresAxes[0].score,
+      credibility_score: scoresAxes[1].score,
+      economic_score: scoresAxes[2].score,
+      influence_score: scoresAxes[3].score,
+      strategy_score: scoresAxes[4].score,
+
+      questionnaire_version: "3.0",
+      scoring_version: "3.0",
+
+      consent_given: true,
+      consent_timestamp: new Date().toISOString(),
+      privacy_policy_version: "1.0",
+
+      partner: null,
+      campaign: null,
+    },
+
+    answers,
+  };
+
+  const response = await fetch(
+    "https://mezkxzeqgwhbmkxjfwzb.supabase.co/functions/v1/submit-diagnostic",
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(payload),
+    }
+  );
+
+  const result = await response.json();
+
+  if (!response.ok || !result.ok) {
+    throw new Error(result.error || "Erreur d'enregistrement");
+  }
+
+  return result;
+};
+  const onTerminer = async () => {
+  try {
+    await envoyerSupabase(reponses);
+    setEcran("resultats");
+    envoyerEmail(reponses);
+  } catch (err) {
+    console.error("Supabase error:", err);
+    alert("Le diagnostic n’a pas pu être enregistré. Merci de réessayer.");
+  }
+};
 
   if (ecran === "accueil") return <EcranAccueil onDemarrer={() => setEcran("identite")}/>;
   if (ecran === "motdepasse") return <EcranMotDePasse onValider={() => setEcran("identite")}/>;
